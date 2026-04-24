@@ -1,0 +1,64 @@
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+.idea/
+.vscode/
+*.iml
+
+# ===== Dart / Flutter =====
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+build/
+
+# If you use FVM
+.fvm/
+
+# ===== Logs =====
+*.log
+
+# ===== Environment / Secrets =====
+.env
+.env.*
+!.env.example
+
+# ===== Android =====
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+*.jks
+*.keystore
+
+# Kotlin/Java build outputs (extra safety)
+**/android/**/build/
+
+# ===== iOS / macOS =====
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+
+**/macos/Pods/
+**/macos/Flutter/ephemeral/
+
+# Xcode user-specific
+**/ios/*.xcworkspace/xcuserdata/
+**/ios/*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+**/ios/*.xcodeproj/xcuserdata/
+**/macos/*.xcworkspace/xcuserdata/
+**/macos/*.xcodeproj/xcuserdata/
+
+# ===== Windows/Linux build artifacts (extra safety) =====
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
+
+# ===== Optional: Firebase config (按你团队策略决定) =====
+# 如果你不想上传 Firebase 配置，就保持忽略
+# GoogleService-Info.plist
+# google-services.json

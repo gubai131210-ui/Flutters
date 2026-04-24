@@ -1,0 +1,23 @@
+[
+  {"id":"p1","category":"photo","emoji":"📷","text":"拍下今天最像电影结尾的一束光。"},
+  {"id":"p2","category":"photo","emoji":"🌤️","text":"记录窗外云层最柔软的一角。"},
+  {"id":"p3","category":"photo","emoji":"🎫","text":"把一张票根、收据或路标也当成风景。"},
+  {"id":"t1","category":"text","emoji":"📝","text":"写一句今天想留给未来自己的话。"},
+  {"id":"t2","category":"text","emoji":"📖","text":"摘一行书里的句子，再补一句你的回应。"},
+  {"id":"t3","category":"text","emoji":"💭","text":"用十个字描述此刻的空气。"},
+  {"id":"a1","category":"audio","emoji":"🎧","text":"记下刚刚循环的那首歌，为什么想再听一遍？"},
+  {"id":"a2","category":"audio","emoji":"🎙️","text":"录一段环境音，留住今天的背景。"},
+  {"id":"a3","category":"audio","emoji":"🎵","text":"写下副歌里最像你的一句。"},
+  {"id":"m1","category":"memory","emoji":"🌙","text":"今晚最适合被放进夜色里的碎片是什么？"},
+  {"id":"m2","category":"memory","emoji":"🌧️","text":"如果把今天标成一种天气，会是哪一种？"},
+  {"id":"m3","category":"memory","emoji":"🎨","text":"今天的心情像什么颜色？"},
+  {"id":"m4","category":"memory","emoji":"🫶","text":"有没有一个瞬间，让你觉得被轻轻接住？"},
+  {"id":"m5","category":"memory","emoji":"🧳","text":"写下一个你想带去下一次旅行的片段。"},
+  {"id":"m6","category":"memory","emoji":"🍃","text":"记录今天最安静的一分钟发生了什么。"},
+  {"id":"m7","category":"memory","emoji":"☕","text":"用一杯饮料形容今天的节奏。"},
+  {"id":"m8","category":"memory","emoji":"✨","text":"把今天最微小但发光的瞬间留住。"},
+  {"id":"m9","category":"memory","emoji":"💌","text":"如果要写一张寄不出去的明信片，你想写给谁？"},
+  {"id":"m10","category":"memory","emoji":"🌊","text":"今天有什么情绪像潮水一样来过？"},
+  {"id":"m11","category":"memory","emoji":"🪞","text":"此刻的你最想对镜子里的自己说什么？"},
+  {"id":"m12","category":"memory","emoji":"🌅","text":"写下一个让今天慢慢回暖的细节。"}
+]

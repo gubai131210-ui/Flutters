@@ -1,0 +1,18 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 毛玻璃背景 -->
+  <rect x="128" y="128" width="768" height="768" rx="153.6" fill="#FFFFFF" fill-opacity="0.35"/>
+  <rect x="128" y="128" width="768" height="768" rx="153.6" fill="none" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="2"/>
+  
+  <!-- 线之精灵水母 -->
+  <g transform="translate(307.2, 256)">
+    <path d="M 108 81 Q 162 45 216 81 T 270 126" fill="none" stroke="#a6b9c9" stroke-width="3.6" stroke-linecap="round"/>
+    <path d="M 81 144 Q 135 99 189 144 T 252 189" fill="none" stroke="#b8c8d6" stroke-width="2.7" stroke-linecap="round"/>
+    <path d="M 63 207 Q 135 153 207 216 T 279 252" fill="none" stroke="#93a8b9" stroke-width="2.16" stroke-linecap="round"/>
+    <path d="M 99 270 Q 162 225 225 270" fill="none" stroke="#c5d2de" stroke-width="3.96" stroke-linecap="round"/>
+    <path d="M 126 297 Q 171 270 216 306" fill="none" stroke="#a2b5c5" stroke-width="2.52" stroke-linecap="round"/>
+  </g>
+  
+  <!-- 文字 Senti -->
+  <text x="512" y="768" font-family="Inter, sans-serif" font-size="122.4" font-weight="300" letter-spacing="28.8" fill="#6e8498" text-anchor="middle" text-transform="lowercase">senti</text>
+  <rect x="494" y="792" width="64.8" height="1.8" fill="#a0b4c4" opacity="0.3"/>
+</svg>

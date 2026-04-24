@@ -1,0 +1,22 @@
+[
+  {"id":"happy","label":"开心","face":"ヾ(≧▽≦*)o"},
+  {"id":"gentle","label":"温柔","face":"(◕ᴗ◕✿)"},
+  {"id":"blink","label":"眨眼","face":"(｡•̀ᴗ-)✧"},
+  {"id":"shy","label":"害羞","face":"(〃▽〃)"},
+  {"id":"hug","label":"抱抱","face":"(づ｡◕‿‿◕｡)づ"},
+  {"id":"curious","label":"好奇","face":"(⊙ω⊙)"},
+  {"id":"nod","label":"点头","face":"(˶ᵔ ᵕ ᵔ˶)"},
+  {"id":"sleepy","label":"犯困","face":"(｡´-д-)"},
+  {"id":"love","label":"比心","face":"(ෆ˙ᵕ˙ෆ)♡"},
+  {"id":"comfort","label":"安慰","face":"(｡･ω･｡)ﾉ♡"},
+  {"id":"dizzy","label":"晕乎乎","face":"(×﹏×)"},
+  {"id":"calm","label":"安静","face":"(◡‿◡✿)"},
+  {"id":"float","label":"飘着","face":"~(˘▾˘~)"},
+  {"id":"spark","label":"闪亮","face":"(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"},
+  {"id":"soft","label":"软乎乎","face":"(っ˘ω˘ς )"},
+  {"id":"wink2","label":"轻 wink","face":"(^_-)☆"},
+  {"id":"sunny","label":"明朗","face":"(๑˃ᴗ˂)ﻭ"},
+  {"id":"cozy","label":"窝着","face":"(¦3[▓▓]"},
+  {"id":"cheer","label":"打气","face":"٩(ˊᗜˋ*)و"},
+  {"id":"quiet","label":"发呆","face":"(｡•ㅅ•｡)"}
+]

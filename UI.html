@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>感念 · 轻盈互动版</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Noto+Serif+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #c5bbb4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      padding: 8px;
+    }
+    .phone-frame {
+      width: 100%;
+      max-width: 390px;
+      min-width: 240px;
+      background: #faf5f0;
+      border-radius: 44px;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.12), 0 0 0 8px rgba(255,255,255,0.4);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.5);
+      transition: background 0.5s ease;
+    }
+    .app-screen {
+      padding: 12px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* 动态主题颜色 */
+    .phone-frame.morning { background: linear-gradient(145deg, #f5e9dd 0%, #fdf6ed 100%); }
+    .phone-frame.afternoon { background: linear-gradient(145deg, #e4eef5 0%, #f2f8fc 100%); }
+    .phone-frame.evening { background: linear-gradient(145deg, #ecdac9 0%, #f9ede1 100%); }
+    .phone-frame.night { background: linear-gradient(145deg, #1a1e2e 0%, #2a2f3f 100%); }
+
+    /* 首页 */
+    .home-view { display: flex; flex-direction: column; flex: 1; }
+
+    /* 顶部状态栏 */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(10px, 2.5vw, 12px);
+      color: #7a6a6a;
+      margin-bottom: 4px;
+      height: 16px;
+      align-items: center;
+    }
+
+    /* 顶部横向滑动容器：呼吸引导 + 日期 + 颜文字（滑动/点击触发放映） */
+    .top-slide-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 8px;
+      padding: 4px 0;
+      margin-bottom: 12px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x pan-y;
+    }
+    .top-slide-container::-webkit-scrollbar { display: none; }
+
+    /* 呼吸引导（替换天气） */
+    .breath-guide {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(8px);
+      padding: 1px 8px;
+      border-radius: 40px;
+      border: 0.5px solid rgba(255,255,255,0.3);
+      font-size: clamp(9px, 2.2vw, 11px);
+      color: #5a4a3f;
+      min-width: 90px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .breath-guide:active {
+      background: rgba(255,255,255,0.35);
+      transform: scale(0.96);
+    }
+    .night .breath-guide { color: #cfc3b8; background: rgba(30,30,40,0.4); }
+
+    /* 呼吸圆点动画 */
+    .breath-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #b28b7c;
+      animation: breath 11s infinite ease-in-out;
+    }
+    .morning .breath-dot { background: #6b8e6b; }
+    .afternoon .breath-dot { background: #5a8ca8; }
+    .evening .breath-dot { background: #b28b7c; }
+    .night .breath-dot { background: #c4b5fd; }
+
+    @keyframes breath {
+      0%, 100% { transform: scale(0.6); opacity: 0.6; }
+      36% { transform: scale(1.4); opacity: 1; } /* 吸气4秒 */
+      63% { transform: scale(1.4); opacity: 1; } /* 屏息7秒 */
+    }
+
+    /* 日期面板 */
+    .date-panel {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: clamp(9px, 2.2vw, 11px);
+      color: #7a6a6a;
+      padding: 1px 4px;
+    }
+
+    /* 颜文字容器 */
+    .kaomoji-slide-trigger {
+      scroll-snap-align: end;
+      flex-shrink: 0;
+      min-width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(178, 139, 124, 0.15);
+      border-radius: 40px;
+      border: 0.5px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .kaomoji-slide-trigger:active {
+      background: rgba(178, 139, 124, 0.25);
+      transform: scale(0.96);
+    }
+
+    /* 软萌颜文字互动组件 */
+    .kaomoji {
+      font-size: clamp(16px, 4vw, 20px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: kaomojiFloat 3s ease-in-out infinite;
+      user-select: none;
+      pointer-events: none;
+    }
+    @keyframes kaomojiFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .morning .kaomoji { color: #6b8e6b; }
+    .afternoon .kaomoji { color: #5a8ca8; }
+    .evening .kaomoji { color: #b28b7c; }
+    .night .kaomoji { color: #c4b5fd; }
+    .kaomoji.blink { animation: kaomojiBlink 0.5s ease-in-out; }
+    @keyframes kaomojiBlink {
+      0%,100% { transform: scale(1); }
+      50% { transform: scaleY(0.1); }
+    }
+    .kaomoji.happy { animation: kaomojiHappy 0.8s ease-in-out; }
+    @keyframes kaomojiHappy {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .kaomoji.shy { animation: kaomojiShy 1s ease-in-out; }
+    @keyframes kaomojiShy {
+      0%,100% { transform: scale(1) rotate(0); }
+      50% { transform: scale(0.9) rotate(-5deg); }
+    }
+    .kaomoji.surprise { animation: kaomojiSurprise 0.6s ease-in-out; }
+    @keyframes kaomojiSurprise {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+    .kaomoji.yawn { animation: kaomojiYawn 1.2s ease-in-out; }
+    @keyframes kaomojiYawn {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.1) translateY(-2px); }
+    }
+    .kaomoji.jump { animation: kaomojiJump 0.7s ease-in-out; }
+    @keyframes kaomojiJump {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .kaomoji.hug { animation: kaomojiHug 1s ease-in-out; }
+    @keyframes kaomojiHug {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    .greeting {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 4.5vw, 22px);
+      font-weight: 350;
+      color: #3e3232;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 瀑布网格 */
+    .masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 6px 0 12px;
+      flex: 1;
+    }
+
+    /* 卡片 */
+    .memory-card {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(14px);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.5);
+      overflow: visible;
+      position: relative;
+      box-shadow: 0 8px 18px rgba(60,40,30,0.08), 0 2px 6px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6);
+      transition: transform 0.2s cubic-bezier(0.2,0.9,0.4,1), box-shadow 0.3, background 0.2s;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .memory-card:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 10px rgba(60,40,30,0.12), inset 0 0 0 1px rgba(255,255,255,0.8);
+    }
+    @media (hover: hover) {
+      .memory-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 28px -8px rgba(60,40,30,0.15), 0 2px 6 rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.6);
+      }
+    }
+
+    .card-decor {
+      position: absolute;
+      top: -5px;
+      left: 12px;
+      background: rgba(255, 255, 240, 0.8);
+      backdrop-filter: blur(4px);
+      width: 24px;
+      height: 24px;
+      border-radius: 20px;
+      font-size: clamp(11px, 2.8vw, 13px);
+      border: 0.5px solid rgba(255,255,255,0.8);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      color: #6b584a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: transform 0.2s;
+    }
+    .memory-card:active .card-decor { transform: scale(0.9); }
+
+    .card-image {
+      width: 100%;
+      aspect-ratio: 1/1.1;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .card-content { padding: 10px 8px 12px; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 5px; }
+    .mini-tag {
+      background: rgba(235,222,215,0.6);
+      backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 30px;
+      font-size: clamp(8px, 2vw, 10px);
+      color: #4a3c37;
+      border: 0.5px solid rgba(255,255,255,0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .card-text { font-size: clamp(11px, 2.8vw, 13px); line-height: 1.4; color: #2f2623; }
+    .serif-quote { font-family: 'Noto Serif SC', serif; font-size: clamp(13px, 3.2vw, 15px); }
+    .song-title { font-size: clamp(14px, 3.5vw, 17px); font-family: 'Noto Serif SC', serif; font-weight: 500; }
+
+    /* 底部导航 */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 4px 6px;
+      border-top: 0.5px solid rgba(180,160,150,0.15);
+    }
+    .nav-item {
+      color: #9b8a82;
+      font-size: clamp(18px, 4.5vw, 20px);
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 40px;
+      transition: all 0.15s;
+    }
+    .nav-item:active { background: rgba(210,180,170,0.15); transform: scale(0.94); }
+    .nav-item.active { color: #b28b7c; background: rgba(210,180,170,0.2); }
+
+    /* 灵感按钮 */
+    .inspire-btn {
+      position: absolute;
+      bottom: 70px;
+      right: 12px;
+      background: rgba(240, 225, 215, 0.8);
+      backdrop-filter: blur(12px);
+      width: clamp(44px, 11vw, 52px);
+      height: clamp(44px, 11vw, 52px);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.6);
+      color: #4d3a32;
+      font-size: clamp(20px, 5vw, 24px);
+      z-index: 15;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .inspire-btn:active { transform: scale(0.9) rotate(-5deg); background: #e8d4c6; }
+
+    /* ===================== 放映页 舒缓版 ===================== */
+    .player-view {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0c0a0f;
+      border-radius: 44px;
+      padding: 12px 12px 12px;
+      z-index: 20;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    .player-view.active { display: flex; }
+
+    /* 双层动态光晕 + 流光效果 */
+    .player-bg-aura {
+      position: absolute;
+      top: -20%; left: -20%;
+      width: 140%; height: 70%;
+      background: radial-gradient(circle at 30% 25%, #f09bbb 0%, #a88cff 30%, #6fa8d4 60%, transparent 80%);
+      opacity: 0.6;
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+      animation: auraFlow 18s infinite alternate;
+    }
+    .player-bg-aura2 {
+      position: absolute;
+      bottom: -20%; right: -20%;
+      width: 140%; height: 70%;
+      background: radial-gradient(circle at 70% 80%, #8cffd8 0%, #ffb8d8 30%, #d4b0ff 60%, transparent 80%);
+      opacity: 0.4;
+      filter: blur(70px);
+      z-index: 0;
+      pointer-events: none;
+      animation: auraFlow2 22s infinite alternate;
+    }
+    /* 流光扫光效果 */
+    .streamer {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation: streamer 12s infinite linear;
+      z-index: 1;
+      pointer-events: none;
+    }
+    @keyframes streamer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    @keyframes auraFlow {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(20px,-20px) scale(1.1); }
+      100% { transform: translate(-20px,20px) scale(1); }
+    }
+    @keyframes auraFlow2 {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-20px,20px) scale(1.1); }
+      100% { transform: translate(20px,-20px) scale(1); }
+    }
+
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      color: #f0e5dd;
+      margin-bottom: 12px;
+      z-index: 2;
+      height: 24px;
+      align-items: center;
+    }
+    .player-header i { cursor: pointer; transition: transform 0.15s; font-size: clamp(16px, 4vw, 18px); }
+    .player-header i:active { transform: scale(0.9); opacity: 0.7; }
+    .player-header span { font-family: 'Noto Serif SC', serif; font-size: clamp(14px, 3.5vw, 16px); }
+
+    .player-main { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 2; }
+    .slide-container { 
+      width: 100%; 
+      height: 420px;
+      position: relative;
+      perspective: 1000px;
+    }
+
+    /* 升级：更缓慢的切换动画 */
+    .elegant-slide-card {
+      position: absolute;
+      width: 100%;
+      background: rgba(25,19,20,0.6);
+      backdrop-filter: blur(32px);
+      border: 1px solid rgba(255,220,220,0.3);
+      border-radius: 36px;
+      padding: 16px 12px 22px;
+      box-shadow: 0 0 40px rgba(168,140,255,0.2), 0 30px 40px -8px rgba(0,0,0,0.6);
+      transition: all 1.2s cubic-bezier(0.25,0.8,0.25,1);
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .elegant-slide-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border-radius: 36px;
+      background: linear-gradient(135deg, rgba(255,180,200,0.1), rgba(168,140,255,0.1));
+      z-index: -1;
+    }
+
+    /* 5种更舒缓的切换动画 */
+    .slide-fade { opacity: 0; transform: scale(0.95); }
+    .slide-slide { opacity: 0; transform: translateX(60px); }
+    .slide-zoom { opacity: 0; transform: scale(0.7) rotate(2deg); }
+    .slide-fragment { opacity: 0; transform: translate(-15px, 15px) scale(0.9); }
+    .slide-star { 
+      opacity: 0; 
+      transform: scale(0); 
+      filter: blur(15px);
+    }
+    .slide-active {
+      opacity: 1;
+      transform: translate(0) scale(1) rotate(0);
+      filter: blur(0);
+    }
+
+    .slide-decor {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: rgba(210,180,165,0.2);
+      backdrop-filter: blur(4px);
+      width: 26px;
+      height: 26px;
+      border-radius: 30px;
+      font-size: clamp(12px, 3vw, 14px);
+      color: #e7d9d0;
+      border: 0.5px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .slide-image {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      border: 0.5px solid rgba(255,255,255,0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .slide-quote {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(20px, 5vw, 24px);
+      color: #f5ece6;
+      text-align: center;
+      font-weight: 350;
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    .slide-tags {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 16px 0 6px;
+      flex-wrap: wrap;
+    }
+    .slide-tag {
+      background: rgba(210,180,165,0.2);
+      backdrop-filter: blur(8px);
+      padding: 5px 16px;
+      border-radius: 60px;
+      font-size: clamp(12px, 3vw, 15px);
+      color: #e7d9d0;
+      border: 0.5px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+
+    .music-bar {
+      background: rgba(18,13,11,0.55);
+      backdrop-filter: blur(30px);
+      border-radius: 80px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0 12px;
+      border: 0.5px solid rgba(255,245,235,0.1);
+      z-index: 2;
+    }
+    .music-title { color: #ece1d9; font-size: clamp(11px, 2.8vw, 13px); }
+    .play-pause {
+      background: rgba(230,210,200,0.2);
+      width: clamp(36px, 9vw, 42px);
+      height: clamp(36px, 9vw, 42px);
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: clamp(14px, 3.5vw, 16px);
+    }
+
+    .gesture-hint {
+      margin-top: 8px;
+      color: #b7a69b;
+      font-size: clamp(10px, 2.5vw, 12px);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      animation: gentleSway 3.5s infinite;
+      z-index: 2;
+    }
+    @keyframes gentleSway {
+      0%,100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+
+    /* 提示toast */
+    .toast-message {
+      position: fixed;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(40,35,45,0.8);
+      backdrop-filter: blur(12px);
+      color: #f0e2d8;
+      padding: 6px 12px;
+      border-radius: 60px;
+      font-size: clamp(10px, 2.5vw, 12px);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+<div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+  <div class="phone-frame morning" id="phoneFrame">
+    <div class="app-screen">
+      <div class="home-view" id="homeView">
+        <div class="status-bar" id="statusTime">9:41</div>
+
+        <!-- 顶部滑动栏：呼吸引导 + 日期 + 颜文字 -->
+        <div class="top-slide-container" id="topSlideContainer">
+          <!-- 呼吸引导（替换天气） -->
+          <div class="breath-guide" id="breathGuide">
+            <div class="breath-dot" id="breathDot"></div>
+            <span id="breathText">深呼吸</span>
+          </div>
+          <div class="date-panel">
+            <i class="fas fa-calendar-alt" style="opacity: 0.7;"></i>
+            <span id="dateDisplay">4月20日 周日</span>
+          </div>
+          <div class="kaomoji-slide-trigger" id="kaomojiTrigger">
+            <div class="kaomoji" id="kaomoji">(◕ᴗ◕✿)</div>
+          </div>
+        </div>
+
+        <div class="greeting" id="greetingMessage">
+          <i class="fas fa-cloud-sun" id="greetIcon"></i>
+          <span id="greetText">早上好，今天也是治愈的一天</span>
+        </div>
+
+        <div class="masonry-grid">
+          <div class="memory-card" data-tags="治愈,怀旧">
+            <div class="card-decor"><i class="fas fa-ticket-alt"></i></div>
+            <img class="card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='220' viewBox='0 0 200 220'%3E%3Crect width='200' height='220' fill='%23b7a69b'/%3E%3Ctext x='18' y='120' font-family='monospace' font-size='14' fill='%23f1e8e2'%3E🎬 电影票根%3C/text%3E%3Ctext x='18' y='140' font-family='monospace' font-size='12' fill='%23e3d6cd'%3E《海上钢琴师》%3C/text%3E%3C/svg%3E" alt="票根">
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span><span class="mini-tag"><i class="far fa-clock"></i> 怀旧</span></div>
+              <div class="card-text">一个人坐在角落，眼泪安静地流。</div>
+            </div>
+          </div>
+          <div class="memory-card" data-tags="温柔,治愈">
+            <div class="card-decor"><i class="fas fa-book-open"></i></div>
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="far fa-star"></i> 温柔</span><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span></div>
+              <div class="serif-quote">“日子是明亮的，我把它收进褶皱里。”</div>
+              <div style="margin-top: 8px; font-size: 11px; opacity: 0.7;">—— 某日书摘</div>
+            </div>
+          </div>
+          <div class="memory-card" data-tags="慵懒,治愈">
+            <div class="card-decor"><i class="fas fa-music"></i></div>
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="fas fa-coffee"></i> 慵懒</span><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span></div>
+              <div class="song-title">Lullaby</div>
+              <div class="song-artist" style="font-size:11px;">Roo Panes</div>
+              <div style="margin-top: 6px; font-size: 12px;">像被云朵接住</div>
+            </div>
+          </div>
+          <div class="memory-card" data-tags="宁静,治愈">
+            <div class="card-decor"><i class="fas fa-tree"></i></div>
+            <img class="card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='220' viewBox='0 0 200 220'%3E%3Crect width='200' height='220' fill='%239faea6'/%3E%3Ctext x='20' y='120' font-family='monospace' font-size='14' fill='%23f3efe7'%3E🌿 公园长椅%3C/text%3E%3C/svg%3E" alt="公园">
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="fas fa-leaf"></i> 宁静</span><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span></div>
+              <div class="card-text">风吹落叶的声音。</div>
+            </div>
+          </div>
+          <div class="memory-card" data-tags="希望,治愈">
+            <div class="card-decor"><i class="fas fa-feather-alt"></i></div>
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="fas fa-dove"></i> 希望</span><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span></div>
+              <div class="serif-quote">“万物皆有裂痕，那是光照进来的地方。”</div>
+            </div>
+          </div>
+          <div class="memory-card" data-tags="温暖,治愈">
+            <div class="card-decor"><i class="fas fa-headphones"></i></div>
+            <div class="card-content">
+              <div class="card-tags"><span class="mini-tag"><i class="fas fa-sun"></i> 温暖</span><span class="mini-tag"><i class="far fa-heart"></i> 治愈</span></div>
+              <div class="song-title">Dawn</div>
+              <div class="song-artist" style="font-size:11px;">Jean-Yves Thibaudet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active"><i class="fas fa-house"></i></div>
+          <div class="nav-item"><i class="fas fa-magnifying-glass"></i></div>
+        </div>
+      </div>
+
+      <!-- 放映页 舒缓版 -->
+      <div class="player-view" id="playerView">
+        <div class="player-bg-aura"></div>
+        <div class="player-bg-aura2"></div>
+        <div class="streamer"></div>
+        <div class="player-header">
+          <i class="fas fa-arrow-left" id="backFromPlayerBtn"></i>
+          <span>治愈 · 沉浸放映</span>
+          <i class="fas fa-ellipsis"></i>
+        </div>
+        <div class="player-main">
+          <div class="slide-container" id="slideContainer">
+            <!-- 动态笔记自动渲染 -->
+          </div>
+          <div class="music-bar">
+            <div class="music-info"><i class="fas fa-music" style="color:#d4bfb2;"></i><div class="music-title">Gymnopédie No.1 · Erik Satie</div></div>
+            <div class="music-controls"><i class="fas fa-backward-step"></i><div class="play-pause" id="playPauseBtn"><i class="fas fa-pause"></i></div><i class="fas fa-forward-step"></i></div>
+          </div>
+          <div class="gesture-hint">
+            <i class="fas fa-magic"></i> 慢慢看 · 时光会温柔流淌 <i class="fas fa-magic"></i>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" id="playerHomeNav"><i class="fas fa-house"></i></div>
+          <div class="nav-item active"><i class="fas fa-magnifying-glass"></i></div>
+        </div>
+      </div>
+
+      <div class="inspire-btn" id="inspireBtn"><i class="far fa-lightbulb"></i></div>
+    </div>
+  </div>
+  <div class="toast-message" id="toastMessage">✨ 灵感：记录今天的云</div>
+</div>
+
+<script>
+  (function(){
+    // 视图切换
+    const homeView = document.getElementById('homeView');
+    const playerView = document.getElementById('playerView');
+    const backBtn = document.getElementById('backFromPlayerBtn');
+    const playerHomeNav = document.getElementById('playerHomeNav');
+    const topSlideContainer = document.getElementById('topSlideContainer');
+    const kaomojiTrigger = document.getElementById('kaomojiTrigger');
+    
+    function showPlayer(){
+      homeView.style.display='none';
+      playerView.classList.add('active');
+      startSlideshow(); // 进入自动播放
+    }
+    function showHome(){
+      homeView.style.display='flex';
+      playerView.classList.remove('active');
+      topSlideContainer.scrollLeft = 0;
+      stopSlideshow(); // 退出停止播放
+    }
+    
+    // 滑动+点击双触发
+    let isScrollTriggered = false;
+    topSlideContainer.addEventListener('scroll', () => {
+      const maxScroll = topSlideContainer.scrollWidth - topSlideContainer.clientWidth;
+      if (topSlideContainer.scrollLeft >= maxScroll - 20 && !isScrollTriggered) {
+        isScrollTriggered = true;
+        showPlayer();
+        setTimeout(() => isScrollTriggered = false, 1000);
+      }
+    });
+    kaomojiTrigger.addEventListener('click', showPlayer);
+    backBtn.addEventListener('click', showHome);
+    playerHomeNav.addEventListener('click', showHome);
+
+    // 动态主题
+    const frame = document.getElementById('phoneFrame');
+    const greetIcon = document.getElementById('greetIcon');
+    const greetText = document.getElementById('greetText');
+    const statusTime = document.getElementById('statusTime');
+    const dateSpan = document.getElementById('dateDisplay');
+    
+    function updateThemeByTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const month = now.getMonth()+1;
+      const day = now.getDate();
+      const weekdays = ['周日','周一','周二','周三','周四','周五','周六'];
+      const weekday = weekdays[now.getDay()];
+      dateSpan.textContent = `${month}月${day}日 ${weekday}`;
+      statusTime.textContent = now.toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+      
+      frame.className = 'phone-frame';
+      if (hours >= 5 && hours < 11) {
+        frame.classList.add('morning');
+        greetIcon.className = 'fas fa-cloud-sun';
+        greetText.textContent = '早上好，今天也是治愈的一天';
+      } else if (hours >= 11 && hours < 17) {
+        frame.classList.add('afternoon');
+        greetIcon.className = 'fas fa-sun';
+        greetText.textContent = '午后好，阳光正好';
+      } else if (hours >= 17 && hours < 20) {
+        frame.classList.add('evening');
+        greetIcon.className = 'fas fa-cloud-moon';
+        greetText.textContent = '傍晚好，收集今天的温柔';
+      } else {
+        frame.classList.add('night');
+        greetIcon.className = 'fas fa-moon';
+        greetText.textContent = '晚安，与自己独处';
+      }
+    }
+    updateThemeByTime();
+    setInterval(updateThemeByTime, 60000);
+
+    // 灵感按钮
+    const inspireBtn = document.getElementById('inspireBtn');
+    const toast = document.getElementById('toastMessage');
+    const quotes = ['✨ 灵感：记录今天的云','🌸 试试写一句诗','🎵 哼一首歌的旋律','📷 拍下窗外的光','☕ 咖啡的香气'];
+    inspireBtn.addEventListener('click', ()=>{
+      const random = quotes[Math.floor(Math.random()*quotes.length)];
+      toast.textContent = random;
+      toast.style.opacity = '1';
+      setTimeout(()=> toast.style.opacity = '0', 2000);
+    });
+
+    // 颜文字互动
+    const kaomoji = document.getElementById('kaomoji');
+    const defaultKaomoji = '(◕ᴗ◕✿)';
+    let isAnimating = false;
+    const kaomojiActions = [
+      { text: '(◡‿◡✿)', cls: 'blink', duration: 3000 },
+      { text: 'ヾ(≧▽≦)ﾉ', cls: 'happy', duration: 3500 },
+      { text: '(〃∀〃)', cls: 'shy', duration: 4000 },
+      { text: '(⊙ω⊙)', cls: 'surprise', duration: 3000 },
+    ];
+    function triggerKaomojiAction() {
+      if (isAnimating) return;
+      isAnimating = true;
+      const random = kaomojiActions[Math.floor(Math.random() * kaomojiActions.length)];
+      kaomoji.textContent = random.text;
+      kaomoji.className = `kaomoji ${random.cls}`;
+      setTimeout(() => {
+        kaomoji.textContent = defaultKaomoji;
+        kaomoji.className = 'kaomoji';
+        isAnimating = false;
+      }, random.duration);
+    }
+    kaomoji.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerKaomojiAction();
+    });
+    setInterval(() => {
+      if (!isAnimating && kaomoji.textContent === defaultKaomoji) {
+        kaomoji.textContent = '(◡‿◡✿)';
+        kaomoji.classList.add('blink');
+        setTimeout(() => {
+          kaomoji.textContent = defaultKaomoji;
+          kaomoji.classList.remove('blink');
+        }, 500);
+      }
+    }, Math.random() * 10000 + 15000);
+
+    // ===================== 呼吸引导功能 =====================
+    const breathText = document.getElementById('breathText');
+    const breathStates = [
+      { text: '吸气', duration: 4000 },
+      { text: '屏息', duration: 7000 },
+      { text: '呼气', duration: 8000 }
+    ];
+    let breathStateIndex = 0;
+
+    function updateBreathState() {
+      breathText.textContent = breathStates[breathStateIndex].text;
+      breathStateIndex = (breathStateIndex + 1) % breathStates.length;
+      setTimeout(updateBreathState, breathStates[breathStateIndex].duration);
+    }
+    updateBreathState();
+
+    // ===================== 自动播放 舒缓版 =====================
+    const slideContainer = document.getElementById('slideContainer');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    let slides = [];
+    let currentIndex = 0;
+    let slideTimer = null;
+    const SLIDE_DURATION = 8000; // 固定8秒切换，更舒缓
+    let isPlaying = true;
+
+    // 动画类型列表
+    const animations = ['slide-fade', 'slide-slide', 'slide-zoom', 'slide-fragment', 'slide-star'];
+    
+    // 初始化笔记数据
+    function initSlides() {
+      const cards = document.querySelectorAll('.memory-card');
+      slides = [];
+      cards.forEach(card => {
+        const img = card.querySelector('.card-image')?.src || '';
+        const text = card.querySelector('.card-text')?.textContent || card.querySelector('.serif-quote')?.textContent || '';
+        const tags = card.dataset.tags.split(',');
+        slides.push({ img, text, tags });
+      });
+    }
+
+    // 渲染单张卡片
+    function renderSlide(index) {
+      const slide = slides[index];
+      if(!slide) return;
+      slideContainer.innerHTML = `
+        <div class="elegant-slide-card slide-active">
+          <div class="slide-decor"><i class="far fa-star"></i></div>
+          <img class="slide-image" src="${slide.img}" alt="笔记">
+          <div class="slide-quote">${slide.text}</div>
+          <div class="slide-tags">
+            ${slide.tags.map(tag => `<span class="slide-tag"><i class="fas fa-tag"></i> ${tag}</span>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 切换动画效果
+    function changeSlide() {
+      const card = document.querySelector('.elegant-slide-card');
+      const randomAnim = animations[Math.floor(Math.random() * animations.length)];
+      
+      card.className = `elegant-slide-card ${randomAnim}`;
+      setTimeout(() => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        renderSlide(currentIndex);
+      }, 600);
+    }
+
+    // 开始自动播放
+    function startSlideshow() {
+      if(slideTimer) clearInterval(slideTimer);
+      slideTimer = setInterval(changeSlide, SLIDE_DURATION);
+      isPlaying = true;
+      playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    }
+
+    // 停止播放
+    function stopSlideshow() {
+      clearInterval(slideTimer);
+      isPlaying = false;
+      playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    }
+
+    // 播放/暂停切换
+    playPauseBtn.addEventListener('click', () => {
+      isPlaying ? stopSlideshow() : startSlideshow();
+    });
+
+    // 初始化
+    initSlides();
+    renderSlide(0);
+  })();
+</script>
+</body>
+</html>
