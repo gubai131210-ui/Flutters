@@ -62,3 +62,4 @@ build/
 # 如果你不想上传 Firebase 配置，就保持忽略
 # GoogleService-Info.plist
 # google-services.json
+开启.md
